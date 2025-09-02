@@ -39,13 +39,13 @@ Project/
 ├── config/               # קבצי הגדרות (API Keys, DB, Ollama)
 ├── controllers/          # לוגיקת צד שרת
 ├── models/               # סכמות MongoDB
-├── routes/               # ניהול ראוטים של Express
+├── routes/               # ראוטים של Express
 ├── views/
 │   ├── pages/            # קבצי EJS ראשיים
-│   └── partials/         # Header, Footer, Navbar
+│   └── partials/         # חלקים משותפים (Header, Footer, Navbar)
 ├── public/
-│   ├── css/              # עיצוב
-│   ├── js/               # סקריפטים צד לקוח
+│   ├── css/              # קבצי עיצוב
+│   ├── js/               # סקריפטים ללקוח
 │   └── uploads/          # תמונות שהועלו
 ├── .env                  # משתני סביבה
 ├── app.js                # קובץ ראשי Express

@@ -35,27 +35,21 @@ The system supports user registration (patients & doctors), account management, 
 
 ## 📂 Project Structure
 
-project/
-├── app.js                   # Main entry point
-├── Dockerfile               # Docker container definition
-├── .dockerignore
-├── .env.example             # Example environment variables
-│
-├── config/                  # Config files
-│
-├── controllers/             # Business logic
-│
-├── middleware/              # Custom middleware (auth, upload)
-│
-├── models/                  # Mongoose schemas
-│
-├── routes/                  # Route definitions
-│
-├── views/                   # EJS templates
-│
-└── public/                  # Static files (CSS, images, uploads)
-
-
+Project/
+├── config/               # קבצי הגדרות (API Keys, DB, Ollama)
+├── controllers/          # לוגיקת צד שרת
+├── models/               # סכמות MongoDB
+├── routes/               # ניהול ראוטים של Express
+├── views/
+│   ├── pages/            # קבצי EJS ראשיים
+│   └── partials/         # Header, Footer, Navbar
+├── public/
+│   ├── css/              # עיצוב
+│   ├── js/               # סקריפטים צד לקוח
+│   └── uploads/          # תמונות שהועלו
+├── .env                  # משתני סביבה
+├── app.js                # קובץ ראשי Express
+└── package.json
 
 
 ---

@@ -34,3 +34,26 @@ The system supports user registration (patients & doctors), account management, 
 ---
 
 ## 📂 Project Structure
+
+project/
+│── app.js # Main entry point
+│── Dockerfile # Docker container definition
+│── .dockerignore
+│── .env.example # Example environment variables
+│── config/ # Config files
+│── controllers/ # Business logic
+│── middleware/ # Custom middleware (auth, upload)
+│── models/ # Mongoose schemas
+│── routes/ # Route definitions
+│── views/ # EJS templates
+│── public/ # Static files (CSS, images, uploads)
+
+---
+
+## ⚙️ Setup
+
+### 1. Clone repository
+```bash
+git clone https://github.com/saramangistu/medical-interaction-checker.git
+cd medical-interaction-checker
+

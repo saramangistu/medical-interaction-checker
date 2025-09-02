@@ -1,0 +1,36 @@
+<%- include('../partials/header', { title: 'Drug – Condition Interaction Check', user: user }) %>
+
+<main class="container">
+    <h2>Drug – Condition Interaction Check</h2>
+
+    <% if (error) { %>
+        <div class="alert alert-danger"><%= error %></div>
+    <% } %>
+
+    <% if (result) { %>
+        <div class="alert 
+            <%= result.status === 'ok' ? 'alert-success' 
+            : result.status === 'warning' ? 'alert-warning' 
+            : result.status === 'error' ? 'alert-danger' 
+            : 'alert-info' %>">
+            <%= result.message %>
+        </div>
+    <% } %>
+
+    <!-- ✅ action תואם ל-drugCheckRoutes -->
+    <form action="/drug-check/check" method="POST" class="form-card">
+        <div class="form-group">
+            <label for="drug">Drug name:</label>
+            <input type="text" id="drug" name="drug" value="<%= drug || '' %>" required>
+        </div>
+
+        <div class="form-group">
+            <label for="condition">Medical condition:</label>
+            <input type="text" id="condition" name="condition" value="<%= condition || '' %>" required>
+        </div>
+
+        <button type="submit" class="btn-primary">Check</button>
+    </form>
+</main>
+
+<%- include('../partials/footer') %>

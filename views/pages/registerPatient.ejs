@@ -1,0 +1,160 @@
+<%- include('../partials/header', { title: "Patient Registration", user: user }) %>
+
+<main class="container">
+  <div class="form-card">
+    <h1>Patient Registration</h1>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="alert alert-danger"><%= error %></div>
+    <% } %>
+    <% if (typeof success !== 'undefined' && success) { %>
+      <div class="alert alert-success"><%= success %></div>
+    <% } %>
+
+    <!-- ✅ נתיב תואם ל-authRoutes -->
+    <form id="registerForm" method="POST" action="/auth/register-patient" enctype="multipart/form-data">
+      <!-- Username -->
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" name="username" required>
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" name="password" required>
+      </div>
+
+      <!-- First/Last name -->
+      <div class="form-row">
+        <div class="form-group half">
+          <label>First Name</label>
+          <input type="text" name="firstName" required>
+        </div>
+        <div class="form-group half">
+          <label>Last Name</label>
+          <input type="text" name="lastName" required>
+        </div>
+      </div>
+
+      <!-- Birth/Gender -->
+      <div class="form-row">
+        <div class="form-group half">
+          <label>Birth Date</label>
+          <input type="date" name="birthDate" required>
+        </div>
+        <div class="form-group half">
+          <label>Gender</label>
+          <select id="genderSelect" name="gender" required>
+            <option value="">Select…</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Female-specific -->
+      <div id="femaleFields" class="form-inline hidden">
+        <label><input type="checkbox" name="pregnant" value="true"> Pregnant</label>
+        <label><input type="checkbox" name="breastfeeding" value="true"> Breastfeeding</label>
+      </div>
+
+      <!-- Conditions -->
+      <div class="form-group">
+        <label>Medical Conditions (comma separated)</label>
+        <input type="text" name="medicalConditions" placeholder="e.g., diabetes, hypertension">
+      </div>
+
+      <!-- Medications -->
+      <div class="form-group">
+        <label>Current Medications (comma separated)</label>
+        <input type="text" name="currentMedications" placeholder="e.g., metformin, aspirin">
+      </div>
+
+      <!-- Email/Phone -->
+      <div class="form-row">
+        <div class="form-group half">
+          <label>Email</label>
+          <input type="email" name="email" required>
+        </div>
+        <div class="form-group half">
+          <label>Phone</label>
+          <input type="tel" name="phone">
+        </div>
+      </div>
+
+      <!-- Profile Image -->
+      <div class="form-group">
+        <label>Profile Image</label>
+        <input type="file" id="profileImage" name="profileImage" accept="image/*" required>
+        <div id="imageError" class="error-message hidden"></div>
+      </div>
+
+      <!-- Preview -->
+      <div class="form-group hidden" id="previewContainer">
+        <label>Preview:</label>
+        <img id="imagePreview" src="" alt="Profile Preview" class="profile-preview">
+      </div>
+
+      <button type="submit" class="btn-primary">Register</button>
+    </form>
+
+    <div class="form-footer">
+      <p>Already have an account? <a href="/auth/login" class="link">Login</a></p>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
+
+<script>
+  // הצגת שדות לנשים בלבד
+  document.getElementById('genderSelect').addEventListener('change', () => {
+    const femaleFields = document.getElementById('femaleFields');
+    if (document.getElementById('genderSelect').value === 'female') {
+      femaleFields.classList.remove('hidden');
+    } else {
+      femaleFields.classList.add('hidden');
+      femaleFields.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = false);
+    }
+  });
+
+  // בדיקת תמונת פרופיל + תצוגה מקדימה
+  const profileInput = document.getElementById('profileImage');
+  const errorBox = document.getElementById('imageError');
+  const previewContainer = document.getElementById('previewContainer');
+  const preview = document.getElementById('imagePreview');
+
+  profileInput.addEventListener('change', async function(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('profileImage', file);
+
+    try {
+      const res = await fetch('/auth/validate-image', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        errorBox.classList.add('hidden');
+        preview.src = data.fileUrl || URL.createObjectURL(file);
+        previewContainer.classList.remove('hidden');
+      } else {
+        errorBox.textContent = data.message || "❌ Invalid image. Please upload a clear photo of a person.";
+        errorBox.classList.remove('hidden');
+        previewContainer.classList.add('hidden');
+        profileInput.value = "";
+      }
+    } catch (err) {
+      errorBox.textContent = "⚠ Error validating image.";
+      errorBox.classList.remove('hidden');
+      previewContainer.classList.add('hidden');
+      profileInput.value = "";
+    }
+  });
+</script>

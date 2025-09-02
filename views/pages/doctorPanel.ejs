@@ -1,0 +1,41 @@
+<%- include('../partials/header', { title: 'Doctor Panel', user: user }) %>
+
+<main class="container">
+    <h2>Doctor Panel – Manage Patients</h2>
+
+    <!-- Patients Table -->
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Conditions</th>
+                <th>Medications</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (patients && patients.length > 0) { %>
+                <% patients.forEach(p => { %>
+                    <tr>
+                        <td><%= p.firstName || '' %> <%= p.lastName || '' %></td>
+                        <td><%= (p.medicalConditions || []).join(', ') || '-' %></td>
+                        <td><%= (p.currentMedications || []).join(', ') || '-' %></td>
+                        <td>
+                            <a class="btn-home-secondary" href="/doctor/panel/patient/<%= p._id %>">Details</a>
+                            <a class="btn-primary" href="/doctor/panel/patient/<%= p._id %>/edit">Edit</a>
+                        </td>
+                    </tr>
+                <% }) %>
+            <% } else { %>
+                <tr>
+                    <td colspan="4">No patients found.</td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+
+    <a href="/doctor/panel/add-patient" class="btn-primary">+ Add Patient</a>
+    
+</main>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,97 @@
+<%- include('../partials/header', { title: "Add Patient", user: user }) %>
+
+<main class="container">
+    <div class="form-card">
+        <h2>Add New Patient</h2>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-danger"><%= error %></div>
+        <% } %>
+
+        <!-- ✅ נתיב מתוקן: /doctor/panel/add-patient -->
+        <form action="/doctor/panel/add-patient" method="POST" enctype="multipart/form-data">
+            
+            <div class="form-group">
+                <label for="firstName">First Name:</label>
+                <input type="text" name="firstName" id="firstName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="lastName">Last Name:</label>
+                <input type="text" name="lastName" id="lastName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" name="username" id="username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" name="password" id="password" required>
+            </div>
+
+            <div class="form-group">
+                <label for="birthDate">Birth Date:</label>
+                <input type="date" name="birthDate" id="birthDate" required>
+            </div>
+
+            <div class="form-group">
+                <label for="gender">Gender:</label>
+                <select name="gender" id="gender">
+                    <option value="">Select</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <!-- ✅ נשלט ע"י JS -->
+            <div class="form-inline hidden" id="femaleOptions">
+                <label><input type="checkbox" name="pregnant" value="true"> Pregnant</label>
+                <label><input type="checkbox" name="breastfeeding" value="true"> Breastfeeding</label>
+            </div>
+
+            <div class="form-group">
+                <label for="medicalConditions">Medical Conditions (comma separated):</label>
+                <input type="text" name="medicalConditions" id="medicalConditions">
+            </div>
+
+            <div class="form-group">
+                <label for="currentMedications">Current Medications (comma separated):</label>
+                <input type="text" name="currentMedications" id="currentMedications">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" name="email" id="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone:</label>
+                <input type="text" name="phone" id="phone">
+            </div>
+
+            <div class="form-group">
+                <label for="profileImage">Profile Image:</label>
+                <input type="file" name="profileImage" id="profileImage" accept="image/*">
+            </div>
+
+            <button type="submit" class="btn-primary">Add Patient</button>
+        </form>
+    </div>
+</main>
+
+<script>
+document.getElementById('gender').addEventListener('change', function() {
+    const femaleOptions = document.getElementById('femaleOptions');
+    if (this.value === 'female') {
+        femaleOptions.classList.remove('hidden');
+    } else {
+        femaleOptions.classList.add('hidden');
+        femaleOptions.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = false);
+    }
+});
+</script>
+
+<%- include('../partials/footer') %>

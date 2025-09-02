@@ -1,0 +1,42 @@
+<%- include('../partials/header', { title: "Food - Condition Interaction Analysis", user: user }) %>
+
+<main class="container">
+    <h2>Food - Condition Interaction Analysis</h2>
+
+    <form action="/image-check/food" method="POST" enctype="multipart/form-data" class="form-card">
+        <div class="form-group">
+            <label for="condition">Medical Condition:</label>
+            <input type="text" id="condition" name="condition" placeholder="e.g., diabetes" required>
+        </div>
+
+        <div class="form-group">
+            <label for="image">Upload Image:</label>
+            <input type="file" name="image" id="image" accept="image/*" required>
+        </div>
+
+        <button type="submit" class="btn-primary">Upload & Analyze</button>
+    </form>
+
+    <% if (result) { %>
+        <div class="analysis-result">
+            <% if (result.error) { %>
+                <div class="alert alert-danger"><%= result.error %></div>
+            <% } else { %>
+                <h2><%= result.foodName %></h2>
+
+                <% if (result.imageUrl) { %>
+                    <img src="<%= result.imageUrl %>" alt="Food image preview">
+                <% } %>
+
+                <p><strong>Ingredients:</strong> <%= result.ingredients || 'Not specified' %></p>
+
+                <h3>AI Analysis</h3>
+                <div class="ai-analysis">
+                    <pre><%- result.ollamaAnalysis %></pre>
+                </div>
+            <% } %>
+        </div>
+    <% } %>
+</main>
+
+<%- include('../partials/footer') %>

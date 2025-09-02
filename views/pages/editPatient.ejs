@@ -1,0 +1,74 @@
+<%- include('../partials/header', { title: "Edit Patient", user: user }) %>
+
+<main class="container">
+    <div class="form-card">
+        <h2>Edit Patient</h2>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-danger"><%= error %></div>
+        <% } %>
+
+        <!-- טופס עריכת פרטים רפואיים -->
+        <form action="/doctor/panel/patient/<%= patient._id %>/edit" method="POST">
+            <!-- Name & Age - display only -->
+            <div class="form-group">
+                <label>First Name:</label>
+                <p><%= patient.firstName %></p>
+            </div>
+
+            <div class="form-group">
+                <label>Last Name:</label>
+                <p><%= patient.lastName %></p>
+            </div>
+
+            <div class="form-group">
+                <label>Age:</label>
+                <p><%= patient.age || '-' %></p>
+            </div>
+
+            <!-- Editable: Medical Conditions -->
+            <div class="form-group">
+                <label for="medicalConditions">Medical Conditions:</label>
+                <input type="text" name="medicalConditions" id="medicalConditions"
+                       value="<%= (patient.medicalConditions || []).join(', ') %>"
+                       placeholder="e.g. Diabetes, Asthma">
+                <small>Separate conditions with commas</small>
+            </div>
+
+            <!-- Editable: Current Medications -->
+            <div class="form-group">
+                <label for="currentMedications">Current Medications:</label>
+                <input type="text" name="currentMedications" id="currentMedications"
+                       value="<%= (patient.currentMedications || []).join(', ') %>"
+                       placeholder="e.g. Metformin, Ventolin">
+                <small>Separate medications with commas</small>
+            </div>
+
+            <!-- Only for female patients -->
+            <% if (patient.gender === 'female') { %>
+                <div class="form-group">
+                    <label for="pregnant">Pregnant:</label>
+                    <input type="checkbox" name="pregnant" id="pregnant" value="true" <%= patient.pregnant ? 'checked' : '' %>>
+                </div>
+
+                <div class="form-group">
+                    <label for="breastfeeding">Breastfeeding:</label>
+                    <input type="checkbox" name="breastfeeding" id="breastfeeding" value="true" <%= patient.breastfeeding ? 'checked' : '' %>>
+                </div>
+            <% } %>
+
+            <!-- Actions -->
+            <div class="form-group">
+                <button type="submit" class="btn-primary">Save Changes</button>
+            </div>
+        </form>
+
+        <!-- טופס מחיקה נפרד -->
+        <form action="/doctor/panel/patient/<%= patient._id %>/delete" method="POST"
+              onsubmit="return confirm('Are you sure you want to delete this patient?');">
+            <button type="submit" class="btn-danger">Delete Patient</button>
+        </form>
+    </div>
+</main>
+
+<%- include('../partials/footer') %>

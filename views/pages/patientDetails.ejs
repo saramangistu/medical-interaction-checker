@@ -1,0 +1,83 @@
+<%- include('../partials/header', { title: "Patient Details", user: user }) %>
+
+<main class="container">
+  <div class="form-card">
+    <h2>Patient Details</h2>
+
+    <table class="data-table">
+      <tr>
+        <th>Profile Image</th>
+        <td>
+          <% if (patient.profileImage) { %>
+            <img src="<%= patient.profileImage %>" alt="Profile" class="profile-preview">
+          <% } else { %>-<% } %>
+        </td>
+      </tr>
+      <tr>
+        <th>First Name</th>
+        <td><%= patient.firstName %></td>
+      </tr>
+      <tr>
+        <th>Last Name</th>
+        <td><%= patient.lastName %></td>
+      </tr>
+      <tr>
+        <th>Age</th>
+        <td><%= typeof patient.age === 'number' ? patient.age : (patient.age || '-') %></td>
+      </tr>
+      <tr>
+        <th>Gender</th>
+        <td><%= patient.gender || '-' %></td>
+      </tr>
+
+      <% if (patient.gender === 'female') { %>
+        <tr>
+          <th>Pregnant</th>
+          <td><%= patient.pregnant ? 'Yes' : 'No' %></td>
+        </tr>
+        <tr>
+          <th>Breastfeeding</th>
+          <td><%= patient.breastfeeding ? 'Yes' : 'No' %></td>
+        </tr>
+      <% } %>
+
+      <tr>
+        <th>Medical Conditions</th>
+        <td>
+          <%= (Array.isArray(patient.medicalConditions) && patient.medicalConditions.length)
+                ? patient.medicalConditions.join(', ')
+                : '-' %>
+        </td>
+      </tr>
+      <tr>
+        <th>Current Medications</th>
+        <td>
+          <%= (Array.isArray(patient.currentMedications) && patient.currentMedications.length)
+                ? patient.currentMedications.join(', ')
+                : '-' %>
+        </td>
+      </tr>
+
+      <tr>
+        <th>Email</th>
+        <td>
+          <% if (patient.email) { %>
+            <a href="mailto:<%= patient.email %>"><%= patient.email %></a>
+          <% } else { %>-<% } %>
+        </td>
+      </tr>
+      <tr>
+        <th>Phone</th>
+        <td>
+          <% if (patient.phone) { %>
+            <a href="tel:<%= patient.phone %>"><%= patient.phone %></a>
+          <% } else { %>-<% } %>
+        </td>
+      </tr>
+    </table>
+
+    <a href="/doctor/panel" class="btn-home-secondary">Back to Panel</a>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

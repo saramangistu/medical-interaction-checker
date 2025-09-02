@@ -48,6 +48,7 @@ project/
 ├── views/              # EJS templates
 └── public/             # Static files (CSS, images, uploads)
 
+
 ---
 
 ## ⚙️ Setup

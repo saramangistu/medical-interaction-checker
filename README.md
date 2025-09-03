@@ -81,5 +81,3 @@ docker run -p 3000:3000 --env-file /path/to/envINTERACTION medapp
 
 4. Open the app in your browser:
 👉 http://localhost:3000
-
-5. 

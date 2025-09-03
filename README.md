@@ -41,3 +41,20 @@ The system supports user registration (patients & doctors), account management, 
 git clone https://github.com/saramangistu/medical-interaction-checker.git
 cd medical-interaction-checker
 
+---
+
+## 🚀 Running the Docker Image Locally
+
+1. Make sure you have Docker installed.
+
+2. Create an environment file (e.g. `envINTERACTION`) with the following variables:
+
+```env
+PORT=3000
+MONGO_URI=mongodb://localhost:27017/medicaldb
+IMAGGA_API_KEY=your_key
+IMAGGA_API_SECRET=your_secret
+USDA_API_KEY=your_key
+OLLAMA_URL=http://localhost:11434
+OLLAMA_MODEL=deepseek-r1:latest
+

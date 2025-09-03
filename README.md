@@ -17,7 +17,7 @@ The system supports user registration (patients & doctors), account management, 
 - **Profile Image Validation**: Ensures uploaded images contain a person.
 - **Deployment**: Hosted live on **Render**.
 
-## 🌐 Deployment Notes (Render)
+#### 🌐 Deployment Notes (Render)
 - The application backend is deployed on **Render (Free Tier)**.  
 - Due to free tier limitations, **Ollama AI analysis cannot run on Render** and must be executed locally (via Docker).  
 - This means:

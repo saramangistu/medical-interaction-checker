@@ -31,8 +31,27 @@ The system supports user registration (patients & doctors), account management, 
   - [USDA FDC](https://fdc.nal.usda.gov/api-guide.html)
   - [Ollama](https://ollama.ai/)
 
-
 ---
+
+## 🗂️ Project Structure
+```plaintext
+Project/
+├── config/               # API keys, DB, Ollama config
+├── controllers/          # Server-side logic
+├── models/               # MongoDB schemas
+├── routes/               # Express routes
+├── views/
+│   ├── pages/            # EJS templates
+│   └── partials/         # Header, Footer, Navbar
+├── public/
+│   ├── css/              # Stylesheets
+│   ├── js/               # Client-side scripts
+│   └── uploads/          # Uploaded images
+├── .env                  # Environment variables
+├── app.js                # Main Express app
+└── package.json
+
+```
 
 ## ⚙️ Setup
 

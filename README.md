@@ -42,12 +42,12 @@ git clone https://github.com/saramangistu/medical-interaction-checker.git
 cd medical-interaction-checker
 
 ---
-
+```markdown
 ## 🚀 Running the Docker Image Locally
 
 1. Make sure you have Docker installed.
 
-2. Create an environment file (e.g. `envINTERACTION`) with the following variables:
+2. Create an environment file (e.g. `.env` or `envINTERACTION`) with the following variables:
 
 ```env
 PORT=3000
@@ -58,3 +58,10 @@ USDA_API_KEY=your_key
 OLLAMA_URL=http://localhost:11434
 OLLAMA_MODEL=deepseek-r1:latest
 
+3. Run the container:
+docker run -p 3000:3000 --env-file /path/to/envINTERACTION medapp
+
+4. Open the app in your browser:
+👉 http://localhost:3000
+
+5. 

@@ -40,7 +40,7 @@ The system supports user registration (patients & doctors), account management, 
 ```bash
 git clone https://github.com/saramangistu/medical-interaction-checker.git
 cd medical-interaction-checker
-
+```
 ---
 ```markdown
 ## 🚀 Running the Docker Image Locally

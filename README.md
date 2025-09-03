@@ -42,13 +42,12 @@ git clone https://github.com/saramangistu/medical-interaction-checker.git
 cd medical-interaction-checker
 ```
 ---
-```markdown
 ## 🚀 Running the Docker Image Locally
 
 1. Make sure you have Docker installed.
 
 2. Create an environment file (e.g. `.env` or `envINTERACTION`) with the following variables:
-```
+
 ```env
 PORT=3000
 MONGO_URI=mongodb://localhost:27017/medicaldb

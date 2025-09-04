@@ -1,7 +1,7 @@
 // controllers/accountController.js
 const fs = require('fs');
 const User = require('../models/userModel');
-const { detectMainTag } = require('./profileImageController');
+const { detectMainTags } = require('./profileImageController');
 
 // 📌 רינדור עמוד החשבון
 exports.renderAccountPage = (req, res) => {
@@ -9,7 +9,6 @@ exports.renderAccountPage = (req, res) => {
         return res.redirect('/auth/login');
     }
 
-    // המרה ל-Date כדי למנוע בעיה עם toISOString ב-EJS
     if (req.session.user.birthDate) {
         req.session.user.birthDate = new Date(req.session.user.birthDate);
     }
@@ -52,16 +51,16 @@ exports.updateAccount = async (req, res) => {
         // 📌 אם הועלתה תמונה — בדוק שהיא של אדם
         if (req.file) {
             const fullPath = __dirname + '/../public/images/profile/' + req.file.filename;
-            const detected = await detectMainTag(fullPath);
+            const detected = await detectMainTags(fullPath); // מחזיר רשימה
 
-            const personTags = ['person', 'man', 'woman', 'people', 'face', 'boy', 'girl'];
-            const isPerson = detected?.name && personTags.includes(detected.name);
+            const personTags = ['portrait', 'person', 'man', 'woman', 'people', 'face', 'boy', 'girl'];
+            const detectedPerson = detected.find(tag => personTags.includes(tag.name));
 
-            if (!isPerson) {
+            if (!detectedPerson) {
                 fs.unlinkSync(fullPath); // מחיקה אם לא עבר
                 return res.status(400).render('pages/account', { 
                     user: req.session.user, 
-                    error: `The uploaded image must clearly contain a person. Detected: "${detected?.name || 'none'}"`
+                    error: `The uploaded image must clearly contain a person. Top detected: "${detected[0]?.name || 'none'}"`
                 });
             }
 
@@ -87,7 +86,7 @@ exports.updateAccount = async (req, res) => {
             firstName: user.firstName || '',
             lastName: user.lastName || '',
             birthDate: user.birthDate || null,
-            age: user.age || null, // virtual ממודל
+            age: user.age || null,
             gender: user.gender || '',
             pregnant: user.pregnant || false,
             breastfeeding: user.breastfeeding || false,
@@ -100,7 +99,6 @@ exports.updateAccount = async (req, res) => {
                 : '/images/profile/avatar.png'
         };
 
-        // 📌 החזרה
         if (req.headers['content-type']?.includes('application/json')) {
             res.json({ success: true, user: req.session.user });
         } else {
@@ -123,7 +121,6 @@ exports.deleteAccount = async (req, res) => {
         return res.status(401).redirect('/auth/login');
     }
 
-    // רק מטופל יכול למחוק את עצמו
     if (req.session.user.role !== 'patient') {
         return res.status(403).render('pages/account', { 
             user: req.session.user,
@@ -133,8 +130,6 @@ exports.deleteAccount = async (req, res) => {
 
     try {
         await User.findOneAndDelete({ username: req.session.user.username });
-
-        // מחיקת סשן
         req.session.destroy(() => {
             res.redirect('/');
         });

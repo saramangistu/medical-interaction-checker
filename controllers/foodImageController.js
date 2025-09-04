@@ -5,10 +5,10 @@ const FormData = require('form-data');
 const { imagga, usda, ollama } = require('../config/config');
 
 /**
- * זיהוי תגית מובילה מהתמונה באמצעות Imagga API
- * ✅ מחזיר תמיד אובייקט { name, confidence }
+ * זיהוי תגיות מהתמונה באמצעות Imagga API
+ * ✅ מחזיר את 10 התיוגים הגבוהים ביותר
  */
-async function detectMainTag(filePath) {
+async function detectMainTags(filePath) {
   try {
     const form = new FormData();
     form.append('image', fs.createReadStream(filePath));
@@ -23,16 +23,19 @@ async function detectMainTag(filePath) {
     );
 
     const tags = response.data.result?.tags || [];
-    if (!tags.length) return null;
+    if (!tags.length) return [];
 
-    const bestTag = tags.sort((a, b) => b.confidence - a.confidence)[0];
-    return {
-      name: bestTag.tag.en.toLowerCase(),
-      confidence: bestTag.confidence
-    };
+    // מחזירים את 10 התגיות המובילות
+    return tags
+      .sort((a, b) => b.confidence - a.confidence)
+      .slice(0, 10)
+      .map(t => ({
+        name: t.tag.en.toLowerCase(),
+        confidence: t.confidence
+      }));
   } catch (err) {
-    console.error('⚠ Error detecting main tag:', err.message);
-    return null;
+    console.error('⚠ Error detecting tags:', err.message);
+    return [];
   }
 }
 
@@ -128,18 +131,23 @@ exports.postFoodImageCheck = async (req, res) => {
     }
 
     const filePath = `public/uploads/${req.file.filename}`;
-    const detected = await detectMainTag(filePath);
-    const mainTag = detected?.name;
+    const detectedTags = await detectMainTags(filePath);
 
     const foodTags = ['food', 'dish', 'meal', 'fruit', 'vegetable', 'dessert', 'drink', 'meat', 'pasta', 'bread', 'pizza', 'salad'];
-    if (!mainTag || !foodTags.includes(mainTag)) {
+
+    // בדיקה אם יש בכלל תגית אוכל בין ה־10 הגבוהות
+    const hasFood = detectedTags.some(tag => foodTags.includes(tag.name));
+    if (!hasFood) {
       return res.render('pages/foodImageCheck', {
-        result: { error: `⚠ Image tag detected: "${mainTag || 'none'}" is not recognized as food.` },
+        result: { error: `⚠ No valid food tag detected (tags: ${detectedTags.map(t => t.name).join(', ') || 'none'})` },
         user: req.session.user || null
       });
     }
 
-    const fdcData = await getFoodDataFromFDC(mainTag);
+    // ניקח את התגית הראשונה (הכי גבוהה) עבור Ollama
+    const mainTag = detectedTags[0];
+
+    const fdcData = await getFoodDataFromFDC(mainTag.name);
     if (!fdcData) {
       return res.render('pages/foodImageCheck', {
         result: { error: 'No USDA data found for detected food.' },
@@ -147,17 +155,18 @@ exports.postFoodImageCheck = async (req, res) => {
       });
     }
 
-    const analysis = await analyzeFoodWithOllama(mainTag, fdcData, req.body.condition || 'unspecified');
+    const analysis = await analyzeFoodWithOllama(mainTag.name, fdcData, req.body.condition || 'unspecified');
 
     res.render('pages/foodImageCheck', {
       result: { 
         valid: true, 
-        foodName: mainTag, 
+        foodName: mainTag.name, 
         usdaSnippet: `${fdcData.name}`,
         ingredients: fdcData.ingredients,
         ollamaAnalysis: analysis,
         imageUrl: `/uploads/${req.file.filename}`,
-        confidence: detected?.confidence?.toFixed(1) || null
+        confidence: mainTag.confidence.toFixed(1),
+        allTags: detectedTags   // ✅ מציג את 10 התגיות הגבוהות למי שרוצה
       },
       user: req.session.user || null
     });

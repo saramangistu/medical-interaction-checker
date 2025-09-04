@@ -6,7 +6,7 @@ const {
     renderAccountPage, 
     getAccountData, 
     updateAccount, 
-    deleteAccount   // ✅ חדש
+    deleteAccount
 } = require('../controllers/accountController');
 
 // 📌 רינדור עמוד החשבון (EJS)
@@ -16,9 +16,22 @@ router.get('/', renderAccountPage);
 router.get('/data', getAccountData);
 
 // 📌 עדכון חשבון (כולל העלאת תמונת פרופיל)
-router.post('/', upload.single('profileImage'), updateAccount);
+router.post(
+    '/',
+    upload.single('profileImage'),
+    (req, res, next) => {
+        if (req.fileValidationError) {
+            return res.render('pages/account', {
+                user: req.session.user || null,
+                error: req.fileValidationError
+            });
+        }
+        next();
+    },
+    updateAccount
+);
 
 // 📌 מחיקת חשבון עצמי (רק למטופל)
-router.post('/delete', deleteAccount);   // ✅ חדש
+router.post('/delete', deleteAccount);
 
 module.exports = router;

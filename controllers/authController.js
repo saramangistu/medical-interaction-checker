@@ -1,7 +1,7 @@
 const fs = require('fs');
 const bcrypt = require('bcryptjs');
 const User = require('../models/userModel');
-const { detectMainTag } = require('./profileImageController');
+const { detectMainTags } = require('./profileImageController');
 
 /**
  * 📌 בדיקה מיידית של תמונה (AJAX)
@@ -12,22 +12,30 @@ const validateProfileImage = async (req, res) => {
     }
 
     try {
-        const detected = await detectMainTag(req.file.path);
-        const personTags = ['person', 'man', 'woman', 'people', 'face', 'boy', 'girl'];
-        const isPerson = detected?.name && personTags.includes(detected.name);
+        const detectedTags = await detectMainTags(req.file.path);
+        if (!detectedTags || !Array.isArray(detectedTags) || detectedTags.length === 0) {
+            fs.unlinkSync(req.file.path);
+            return res.json({
+                success: false,
+                message: '❌ No valid tags detected in image.'
+            });
+        }
 
-        if (!isPerson) {
+        const personTags = ['portrait', 'person', 'man', 'woman', 'people', 'face', 'boy', 'girl'];
+        const matched = detectedTags.find(tag => personTags.includes(tag.name));
+
+        if (!matched) {
             fs.unlinkSync(req.file.path); // מוחק תמונה לא תקינה
             return res.json({
                 success: false,
-                message: `❌ The uploaded image must clearly contain a person. Detected: "${detected?.name || 'none'}"`
+                message: `❌ The uploaded image must clearly contain a person. Top detected: "${detectedTags[0]?.name || 'none'}"`
             });
         }
 
         // אם תקין – נחזיר אישור ונתיב זמני להציג Preview
         return res.json({
             success: true,
-            message: '✅ Valid person image',
+            message: `✅ Valid person image (matched: "${matched.name}" at ${matched.confidence.toFixed(1)}%)`,
             fileUrl: `/uploads/${req.file.filename}`
         });
     } catch (err) {
@@ -59,6 +67,18 @@ const postRegisterPatient = async (req, res) => {
         if (existingUser) {
             fs.unlinkSync(req.file.path);
             return res.render('pages/registerPatient', { error: 'Username already exists.', user: null });
+        }
+
+        const detectedTags = await detectMainTags(req.file.path);
+        const personTags = ['portrait', 'person', 'man', 'woman', 'people', 'face', 'boy', 'girl'];
+        const matched = detectedTags?.find(tag => personTags.includes(tag.name));
+
+        if (!matched) {
+            fs.unlinkSync(req.file.path);
+            return res.render('pages/registerPatient', {
+                error: `❌ Invalid profile image. Detected tags: ${detectedTags?.map(t => `"${t.name}" (${t.confidence.toFixed(1)}%)`).join(', ') || 'none'}`,
+                user: null
+            });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -115,6 +135,18 @@ const postRegisterDoctor = async (req, res) => {
         if (existingUser) {
             fs.unlinkSync(req.file.path);
             return res.render('pages/registerDoctor', { error: 'Username already exists.', user: null });
+        }
+
+        const detectedTags = await detectMainTags(req.file.path);
+        const personTags = ['portrait', 'person', 'man', 'woman', 'people', 'face', 'boy', 'girl'];
+        const matched = detectedTags?.find(tag => personTags.includes(tag.name));
+
+        if (!matched) {
+            fs.unlinkSync(req.file.path);
+            return res.render('pages/registerDoctor', {
+                error: `❌ Invalid profile image. Detected tags: ${detectedTags?.map(t => `"${t.name}" (${t.confidence.toFixed(1)}%)`).join(', ') || 'none'}`,
+                user: null
+            });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -216,5 +248,5 @@ module.exports = {
     postLogin,
     logout,
     getCurrentUser,
-    validateProfileImage   // ✅ חדש – בדיקה מיידית בהעלאה
+    validateProfileImage   // ✅ בדיקה מיידית בהעלאה עם confidence > 80%
 };

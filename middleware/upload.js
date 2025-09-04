@@ -33,14 +33,15 @@ const storage = multer.diskStorage({
 
 // הגבלה — עד 5MB, וקבלת תמונות בלבד
 function fileFilter(req, file, cb) {
-    const allowed = /jpeg|jpg|png|gif/;
+    const allowed = /jpeg|jpg|png/;
     const ext = file.originalname.substring(file.originalname.lastIndexOf('.') + 1).toLowerCase();
     const mime = file.mimetype;
 
     if (allowed.test(ext) && allowed.test(mime)) {
         cb(null, true);
     } else {
-        cb(new Error('Only image files are allowed!'));
+        req.fileValidationError = '❌ Only JPG, JPEG, and PNG files are allowed!';
+        cb(null, false);
     }
 }
 

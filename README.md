@@ -80,7 +80,7 @@ IMAGGA_API_KEY=your_key
 IMAGGA_API_SECRET=your_secret
 USDA_API_KEY=your_key
 OLLAMA_URL=http://localhost:11434
-OLLAMA_MODEL=deepseek-r1:latest
+OLLAMA_MODEL=gemma:2b # or deepseek-r1:latest
 
 3. Run the container:
 docker run -p 3000:3000 --env-file /path/to/envINTERACTION medapp
